@@ -1,0 +1,32 @@
+{% extends 'order/base.html' %}
+{% block title %}
+Order
+{% endblock %}
+
+{% block content %}
+<form class="form" action="{% url 'update_order' id=order.id%}" method = 'POST'>{% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="email">User</label>
+      <input type="email" class="form-control" id="email"  name="email" value="ID {{order.user.id}}. {{order.user.last_name}} {{order.user.first_name}}"disabled>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="book">Book</label>
+      <input type="book" class="form-control" id="book"  name="book" value="ID {{order.book.id}}.{{order.book.name}}" disabled>
+    </div>
+      </div>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="email">End of Rental </label>
+      <input type="email" class="form-control" id="email"  name="email" value='{{order.plated_end_at|date:"Y-m-d" }} {{order.plated_end_at|time:"H:i:s"}}' disabled>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="book">Date Returning</label>
+      <input type="book" class="form-control" id="book"  name="book" value='{{order.end_at|date:"Y-m-d"|default:"Not returned yet" }} {{order.end_at|time:"H:i:s"}}' disabled>
+    </div>
+  </div>
+
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'author/base.html' %}
+{% block title %}
+Книга
+{% endblock %}
+
+{% block content %}
+
+<form>
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="first_name">Book Name</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{book.name}} "disabled>
+    </div>
+          <div class="form-group col-md-3">
+      <label for="middle_name">Description</label>
+      <input type="text" class="form-control" id="description" name="description" value="{{book.description}}" disabled>
+    </div>
+      <div class="form-group col-md-3">
+      <label for="middle_name">Count</label>
+      <input type="text" class="form-control" id="count" name="count" value={{book.count}} disabled>
+    </div>
+  </div>
+</form>
+    {% if orders_book %}
+<table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+        <td>User</td>
+        <td>Book</td>
+        <td>Rented</td>
+        <td>Returned</td>
+        <td>End of Rental</td>
+        </tr>
+          </thead>
+        {% for order in orders_book %}
+            <td>{{order.user.first_name|default:"-"}} {{order.user.last_name|default:"-"}}</td>
+            <td>{{order.book.name|default:"-"}}</td>
+            <td>{{order.created_at|date:"Y-m-d" }} {{order.created_at|time:"H:i:s"}}</td>
+            <td>{{order.end_at|date:"Y-m-d"|default:"Not returned"}} {{order.end_at|time:"H:i:s"}}</td>
+            <td>{{order.plated_end_at|date:"Y-m-d" }} {{order.plated_end_at|time:"H:i:s"}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No orders</p>
+{% endif %}
+{% endblock %}

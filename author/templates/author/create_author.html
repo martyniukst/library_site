@@ -1,0 +1,25 @@
+{% extends 'author/base.html' %}
+{% block title %}
+Add author
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'create_author' %}" method = 'POST'>{% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="first_name">Name</label>
+      <input type="text" class="form-control" id="name" name="name">
+    </div>
+          <div class="form-group col-md-3">
+      <label for="middle_name">Middle Name</label>
+      <input type="text" class="form-control" id="patronymic" name="patronymic">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="last_name">Surname</label>
+      <input type="text" class="form-control" id="surname" name="surname">
+    </div>
+  </div>
+  <button type="submit" value="Submit" class="btn btn-secondary">Save</button>
+</form>
+{% endblock %}

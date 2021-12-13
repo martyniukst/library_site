@@ -1,0 +1,29 @@
+{% extends 'order/base.html' %}
+{% block title %}
+Users with expired rental period
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="panel panel-primary filterable">
+<table class="table">
+  <thead>
+    <tr class="header"  align="left">
+    <th style="width:2%;" >ID</th>
+    <th style="width:15%;" >User</th>
+    <th style="width:15%;" >Book</th>
+    <th style="width:15%;" >Book returned</th>
+    <th style="width:15%;" >Rental period expired :</th>
+
+    {% for order in orders %}
+        <tr >
+            <td><a href="{% url 'order_id' id=order.id %}">{{order.id}}</a></td>
+            <td>{{order.user.last_name|default:"-"}} {{order.user.first_name|default:"-"}}</td>
+            <td>{{order.book.name|default:"-"}}</td>
+            <td>{{order.end_at|date:"Y-m-d"|default:"Not returned yet" }} {{order.end_at|time:"H:i:s"}}</td>
+            <td>{{order.plated_end_at|date:"Y-m-d" }} {{order.plated_end_at|time:"H:i:s"}}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+
+

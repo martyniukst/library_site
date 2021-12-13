@@ -1,0 +1,118 @@
+{% extends 'book/base.html' %}
+{% block title %}
+Books
+{% endblock %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="panel panel-primary filterable">
+<table class="table table-bordered">
+<thead >
+<tr align="center">
+    <td >
+<form action="{% url 'all_books' %}" method = 'GET'>
+    <button type="submit" name="order_by"  value="id" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-id" class="btn btn-secondary active btn-sm">&#9660;</button>
+
+
+</td><td>
+
+    <button type="submit" name="order_by"  value="name" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-name" class="btn btn-secondary active btn-sm">&#9660;</button>
+
+    </td><td>
+
+    <button type="submit" name="order_by"  value="description" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-description" class="btn btn-secondary active btn-sm">&#9660;</button>
+
+    </td><td>
+
+    <button type="submit" name="order_by"  value="authors" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-authors" class="btn btn-secondary active btn-sm">&#9660;</button>
+
+</td><td>
+
+    <button type="submit" name="order_by"  value="count" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-count" class="btn btn-secondary active btn-sm">&#9660;</button>
+
+    </td>
+
+    <tbody  id="myTable">
+    {% for book in books %}
+        <tr >
+            <td align="center"><a href="{% url 'book_id' id=book.id %}">{{book.id}}</a></td>
+            <td>{{book.name|default:"-"}}</td>
+            <td>{{book.description|default:"-"}}</td>
+            <td>{% if book.authors.all %}
+                                {% for author in book.authors.all %}
+                                    {{author.name}} {{author.surname}}
+                                {% endfor %}
+                            {% else %}
+                                <p> No authors </p>
+                            {% endif %}</td>
+            <td>{{book.count|default:0}}</td>
+            {% if request.user.is_staff%}
+            <td><a href="{% url 'update_book' id=book.id %}">Update</a></td>
+            <td><a href="{% url 'delete_book' id=book.id %}" onclick="return confirm('Are you sure you want to delete this?')">Delete</a></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+
+    <tr class="filters"  align="left" >
+      <th><input type="text" name="filter_by_id"  value="{{ filter_by_id }}" placeholder="ID" size="2"></th>
+      <th><input type="text" name="filter_by_name"  value="{{ filter_by_name }}" placeholder="Book Name" ></th>
+      <th><input type="text" name="filter_by_description"  value="{{ filter_by_description }}" placeholder="Description"></th>
+      <th><input type="text" name="filter_by_author"  value="{{ filter_by_author }}" placeholder="Author" ></th>
+      <th><input type="text" name="filter_by_count"  value="{{ filter_by_count }}" placeholder="Count" ></th>
+        <input type="submit" style="display: none" />
+    </form>
+    </tr>
+
+  </tfoot>
+</table>
+
+</div>
+{% if books.has_other_pages %}
+    <ul class="pagination">
+
+{% if books.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ books.previous_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}"><i class="fa fa-chevron-left" aria-hidden="true"></i>&laquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></li>
+{% endif %}
+
+{% if books.number|add:'-2' > 1 %}
+    <li class="page-item"><a class="page-link" href="?page={{ books.number|add:'-2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}">&hellip;</a></li>
+{% endif %}
+
+{% for i in books.paginator.page_range %}
+    {% if books.number == i %}
+        <li class="page-item active"><a class="page-link" href="#"<span class="sr-only">{{ i }}</span></a></li>
+    {% elif i > books.number|add:'-3' and i < books.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}">{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+
+{% if books.paginator.num_pages > books.number|add:'2' %}
+    <li class="page-item"><a class="page-link" href="?page={{ books.number|add:'2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}">&hellip;</a></li>
+{% endif %}
+
+{% if books.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ books.next_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}"><i class="fa fa-chevron-right" aria-hidden="true"></i>&raquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></li>
+{% endif %}
+
+</ul>
+
+{% endif %}
+{% if messages %}
+    {% for message in messages %}
+
+        <script>   alert("{{ message }}")</script>
+    {% endfor %}
+{% endif %}
+{% endblock %}

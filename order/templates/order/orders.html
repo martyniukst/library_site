@@ -1,0 +1,110 @@
+{% extends 'order/base.html' %}
+{% block title %}
+Orders
+{% endblock %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="panel panel-primary filterable">
+<table class="table table-bordered">
+  <thead >
+<tr align="center">
+    <td >
+<form action="{% url 'all_orders' %}" method = 'GET'>
+    <button type="submit" name="order_by"  value="id" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-id" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="user" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-user" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="book" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-book" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="created_at" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-created_at" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="plated_end_at" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-plated_end_at" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="book_count" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-book_count" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="end_at" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-end_at" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td>
+  </tr>
+  </thead>
+
+    <tbody  id="myTable">
+    {% for order in orders %}
+        <tr >
+            <td><a href="{% url 'order_id' id=order.id %}">{{order.id}}</a></td>
+            <td>{{order.user.last_name|default:"-"}} {{order.user.first_name|default:"-"}}</td>
+            <td>{{order.book.name|default:"-"}}</td>
+            <td>{{order.created_at|date:"Y-m-d" }} {{order.created_at|time:"H:i:s"}}</td>
+            <td>{{order.plated_end_at|date:"Y-m-d" }} {{order.plated_end_at|time:"H:i:s"}}</td>
+            <td>{{order.book_count}}</td>
+            <td>{{order.end_at|date:"Y-m-d" }} {{order.end_at|time:"H:i:s"}}</td>
+            <td><a href="{% url 'update_order' id=order.id %}">Update</a></td>
+            <td><a href="{% url 'delete_order' id=order.id %}">Delete</a></td>
+        </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr class="filters"  align="left" >
+      <th><input type="text"  name="filter_by_id"  value="{{ filter_by_id }}" placeholder="ID" size="3"></th>
+      <th><input type="text"  name="filter_by_user"  value="{{ filter_by_user }}" placeholder="User" ></th>
+      <th><input type="text"  name="filter_by_book"  value="{{ filter_by_book }}" placeholder="Book"></th>
+      <th><input type="text"  name="filter_by_created_at"  value="{{ filter_by_created_at }}" placeholder="Created At" ></th>
+        <th><input type="text"  name="filter_by_plated_end_at"  value="{{ filter_by_plated_end_at }}" placeholder="Plated End At"></th><th><input type="text"  name="filter_by_book_count"  value="{{ filter_by_book_count }}" placeholder="Count" size="3"></th>
+        <th><input type="text"  name="filter_by_end_at"  value="{{ filter_by_end_at }}" placeholder="End At" ></th>
+        </form>
+    </tr>
+  </tfoot>
+</table>
+</div>
+{% if orders.has_other_pages %}
+    <ul class="pagination">
+
+{% if orders.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ orders.previous_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_user={{ filter_by_user }}&filter_by_book={{ filter_by_book }}&filter_by_created_at={{ filter_by_created_at }}&filter_by_plated_end_at={{ filter_by_plated_end_at }}&filter_by_book_count={{ filter_by_book_count }}&filter_by_end_at={{ filter_by_end_at }}"><i class="fa fa-chevron-left" aria-hidden="true"></i>&laquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></li>
+{% endif %}
+
+{% if orders.number|add:'-2' > 1 %}
+    <li class="page-item"><a class="page-link" href="?page={{ orders.number|add:'-2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_user={{ filter_by_user }}&filter_by_book={{ filter_by_book }}&filter_by_created_at={{ filter_by_created_at }}&filter_by_plated_end_at={{ filter_by_plated_end_at }}&filter_by_book_count={{ filter_by_book_count }}&filter_by_end_at={{ filter_by_end_at }}">&hellip;</a></li>
+{% endif %}
+
+{% for i in orders.paginator.page_range %}
+    {% if orders.number == i %}
+        <li class="page-item active"><a class="page-link" href="#"<span class="sr-only">{{ i }}</span></a></li>
+    {% elif i > orders.number|add:'-3' and i < orders.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_user={{ filter_by_user }}&filter_by_book={{ filter_by_book }}&filter_by_created_at={{ filter_by_created_at }}&filter_by_plated_end_at={{ filter_by_plated_end_at }}&filter_by_book_count={{ filter_by_book_count }}&filter_by_end_at={{ filter_by_end_at }}">{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+
+{% if orders.paginator.num_pages > orders.number|add:'2' %}
+    <li class="page-item"><a class="page-link" href="?page={{ orders.number|add:'2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_user={{ filter_by_user }}&filter_by_book={{ filter_by_book }}&filter_by_created_at={{ filter_by_created_at }}&filter_by_plated_end_at={{ filter_by_plated_end_at }}&filter_by_book_count={{ filter_by_book_count }}&filter_by_end_at={{ filter_by_end_at }}">&hellip;</a></li>
+{% endif %}
+
+{% if orders.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ orders.next_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_book_count={{ filter_by_book_count }}&filter_by_author={{ filter_by_author }}"><i class="fa fa-chevron-right" aria-hidden="true"></i>&raquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></li>
+{% endif %}
+
+</ul>
+
+{% endif %}
+{% if messages %}
+    {% for message in messages %}
+
+        <script>   alert("{{ message }}")</script>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
+

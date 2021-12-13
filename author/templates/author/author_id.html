@@ -1,0 +1,45 @@
+{% extends 'author/base.html' %}
+{% block title %}
+{{author.surname}} {{author.name}}
+{% endblock %}
+
+{% block content %}
+
+<form class="form" >
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name"  value={{author.name}} disabled>
+    </div>
+
+    <div class="form-group col-md-3">
+      <label for="patronymic">Middle Name</label>
+      <input type="text" class="form-control" id="patronymic" name="patronymic" value={{author.patronymic|default:'-'}} disabled>
+    </div>
+      <div class="form-group col-md-3">
+      <label for="surname">Surname</label>
+      <input type="text" class="form-control" id="surname" name="surname" value={{author.surname}} disabled>
+    </div>
+  </div>
+</form>
+{% if books_by_author %}
+<table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+        <td>ID</td>
+        <td>Book</td>
+        <td>Description</td>
+        </tr>
+          </thead>
+        {% for book in books_by_author %}
+            <td>{{book.id|default:"-"}}</td>
+            <td>{{book.name|default:"-"}}</td>
+            <td>{{book.description|default:"-"}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No orders</p>
+{% endif %}
+
+{% endblock %}

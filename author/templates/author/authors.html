@@ -1,0 +1,109 @@
+{% extends 'author/base.html' %}
+{% block title %}
+Authors
+{% endblock %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div class="panel panel-primary filterable">
+<table class="table table-bordered">
+<thead >
+<tr align="center">
+    <td >
+<form action="{% url 'all_authors' %}" method = 'GET'>
+    <button type="submit" name="order_by"  value="id" class="btn btn-primary">&#9650;</button>
+    <button type="submit" name="order_by"  value="-id" class="btn btn-primary">&#9660;</button>
+
+
+</td><td>
+
+    <button type="submit" name="order_by"  value="name" class="btn btn-primary">&#9650;</button>
+    <button type="submit" name="order_by"  value="-name" class="btn btn-primary">&#9660;</button>
+
+    </td><td>
+
+    <button type="submit" name="order_by"  value="patronymic" class="btn btn-primary">&#9650;</button>
+    <button type="submit" name="order_by"  value="-patronymic" class="btn btn-primary">&#9660;</button>
+
+    </td><td>
+
+    <button type="submit" name="order_by"  value="surname" class="btn btn-primary">&#9650;</button>
+    <button type="submit" name="order_by"  value="-surname" class="btn btn-primary">&#9660;</button>
+
+</td>
+    <tbody  id="myTable">
+    {% for author in authors %}
+        <tr >
+            <td><a href="{% url 'author_id' id=author.id %}">{{author.id}}</a></td>
+            <td>{{author.name|default:"-"}}</td>
+            <td>{{author.patronymic|default:"-"}}</td>
+            <td>{{author.surname|default:"-"}}</td>
+            {% if request.user.is_staff%}
+            <td><a href="{% url 'update_author' id=author.id %}">Update</a></td>
+            <td><a href="{% url 'delete_author' id=author.id %}">Delete</a></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr class="filters"  align="left" >
+      <th><input type="text" name="filter_by_id"  value="{{ filter_by_id }}" placeholder="ID" size="2"></th>
+      <th><input type="text" name="filter_by_name"  value="{{ filter_by_name }}" placeholder="First Name" ></th>
+      <th><input type="text" name="filter_by_surname"  value="{{ filter_by_surname }}" placeholder="Patronymic"></th>
+      <th><input type="text" name="filter_by_patronymic"  value="{{ filter_by_patronymic }}" placeholder="Last Name" ></th>
+    </form>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
+
+{% if authors.has_other_pages %}
+    <ul class="pagination">
+
+{% if authors.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ authors.previous_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_surname={{ filter_by_surname }}&filter_by_patronymic={{ filter_by_patronymic }}"><i class="fa fa-chevron-left" aria-hidden="true"></i>&laquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></li>
+{% endif %}
+
+{% if authors.number|add:'-2' > 1 %}
+    <li class="page-item"><a class="page-link" href="?page={{ authors.number|add:'-2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_surname={{ filter_by_surname }}&filter_by_patronymic={{ filter_by_patronymic }}">&hellip;</a></li>
+{% endif %}
+
+{% for i in authors.paginator.page_range %}
+    {% if authors.number == i %}
+        <li class="page-item active"><a class="page-link" href="#"<span class="sr-only">{{ i }}</span></a></li>
+    {% elif i > authors.number|add:'-3' and i < authors.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_surname={{ filter_by_surname }}&filter_by_patronymic={{ filter_by_patronymic }}">{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+
+{% if authors.paginator.num_pages > authors.number|add:'2' %}
+    <li class="page-item"><a class="page-link" href="?page={{ authors.number|add:'2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_surname={{ filter_by_surname }}&filter_by_patronymic={{ filter_by_patronymic }}">&hellip;</a></li>
+{% endif %}
+
+{% if authors.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ authors.next_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}"><i class="fa fa-chevron-right" aria-hidden="true"></i>&raquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></li>
+{% endif %}
+
+</ul>
+
+{% endif %}
+{% if messages %}
+    {% for message in messages %}
+
+        <script>   alert("{{ message }}")</script>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

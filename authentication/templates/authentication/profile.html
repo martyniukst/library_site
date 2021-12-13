@@ -1,0 +1,58 @@
+{% extends 'authentication/base.html' %}
+{% block title %}
+{{user.last_name}} {{user.first_name}}
+{% endblock %}
+
+{% block content %}
+
+<form class="form" >
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="last_name">Surname</label>
+      <input type="text" class="form-control" id="last_name" name="last_name"  value={{user.last_name}} disabled>
+    </div>
+
+    <div class="form-group col-md-3">
+      <label for="first_name">Name</label>
+      <input type="text" class="form-control" id="first_name" name="first_name" value={{user.first_name}} disabled>
+    </div>
+      <div class="form-group col-md-3">
+      <label for="middle_name">Middle Name</label>
+      <input type="text" class="form-control" id="middle_name" name="middle_name" value={{user.middle_name}} disabled>
+    </div>
+  </div>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email"  name="email" value={{user.email}} disabled>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="role">Role</label>
+            <input type="role" class="form-control" id="role"  name="role" value={{user.get_role_name}} disabled>
+        </div>
+    </div>
+</form>
+{% if orders_by_user %}
+<table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+        <td>Book</td>
+        <td>Rented</td>
+        <td>Returned</td>
+        <td>End of Rental</td>
+        </tr>
+          </thead>
+        {% for order in orders_by_user %}
+
+            <td>{{order.book.name|default:"-"}}</td>
+            <td>{{order.created_at|date:"Y-m-d" }} {{order.created_at|time:"H:i:s"}}</td>
+            <td>{{order.end_at|date:"Y-m-d"|default:"Not returned"}} {{order.end_at|time:"H:i:s"}}</td>
+            <td>{{order.plated_end_at|date:"Y-m-d" }} {{order.plated_end_at|time:"H:i:s"}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No orders</p>
+{% endif %}
+
+{% endblock %}

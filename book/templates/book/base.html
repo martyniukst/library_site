@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+<br>
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
+  <div class="container">
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-mdb-toggle="collapse"
+      data-mdb-target="#navbarButtonsExample"
+      aria-controls="navbarButtonsExample"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Collapsible wrapper -->
+    <div class="collapse navbar-collapse" id="navbarButtonsExample">
+      <!-- Left links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item active">
+              <a href="/book" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">All Books</a> &#160;
+          </li>
+          <li class="nav-item  active">
+            <a href="/author" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Authors</a> &#160;
+          </li>
+            {% if request.user.is_staff%}
+          <li class="nav-item  active">
+            <a href="/order" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Orders</a> &#160;
+          </li>
+          <li class="nav-item  active">
+            <a href="/user" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Users</a> &#160;
+          </li>
+            {% endif %}
+        </ul>
+</div>
+
+      <div class="d-flex align-items-right">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item active">
+            <a href="{% url 'unordered_book' %}" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Available Books</a> &#160;
+          </li>
+            {% if request.user.is_staff%}
+          <li class="nav-item active">
+            <a href="{% url 'create_book' %}" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Add a new book</a> &#160;
+          </li>
+            {% endif %}
+            {% if not request.user.is_active%}
+          <li class="nav-item active">
+            <a href="/user/login" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Login</a> &#160;
+          </li>
+            {% endif %}
+            {% if request.user.is_active%}
+          <li class="nav-item active">
+            <a href="/user/profile/{{ request.user.id }}" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">My Profile</a> &#160;
+          </li>
+            {% endif %}
+            {% if request.user.is_active%}
+          <li class="nav-item active">
+            <a href="/user/logout" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Logout</a> &#160;
+          </li>
+            {% endif %}
+        </ul>
+      </div>
+
+    </nav>
+
+</header>
+
+
+<div class="px-3">
+<br><br>
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

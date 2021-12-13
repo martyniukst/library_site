@@ -1,0 +1,109 @@
+{% extends 'authentication/base.html' %}
+{% block title %}
+Readers
+{% endblock %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="panel panel-primary filterable">
+<table class="table table-bordered">
+  <thead >
+<tr align="center">
+    <td >
+<form action="{% url 'all_users' %}" method = 'GET'>
+    <button type="submit" name="order_by"  value="id" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-id" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="last_name" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-last_name" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="first_name" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-first_name" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="middle_name" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-middle_name" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="email" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-email" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="created_at" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="-created_at" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td><td>
+    <button type="submit" name="order_by"  value="-role" class="btn btn-secondary active btn-sm">&#9650;</button>
+    <button type="submit" name="order_by"  value="role" class="btn btn-secondary active btn-sm">&#9660;</button>
+</td>
+  </tr>
+  </thead>
+    <tbody  id="myTable">
+    {% for user in users %}
+        <tr>
+            <td><a href="{% url 'user_id' id=user.id %}">{{user.id}}</a></td>
+            <td>{{user.last_name|default:"-"}}</td>
+            <td>{{user.first_name|default:"-"}}</td>
+            <td>{{user.middle_name|default:"-"}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.created_at|date:"Y-m-d" }} {{user.created_at|time:"H:i:s"}}</td>
+            <td>{{user.get_role_name}}</td>
+            <td><a href="{% url 'update_user' id=user.id %}" >Update</a></td>
+            <td><a href="{% url 'delete_user' id=user.id %}">Delete</a></td>
+        </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr class="filters"  align="left" >
+      <th><input type="text"  name="filter_by_id"  value="{{ filter_by_id }}" placeholder="ID" size="3"></th>
+      <th><input type="text" name="filter_by_last_name"  value="{{ filter_by_last_name}}"  placeholder="Last Name" ></th>
+      <th><input type="text"  name="filter_by_first_name"  value="{{ filter_by_first_name }}" placeholder="First Name" ></th>
+      <th><input type="text"  name="filter_by_middle_name"  value="{{ filter_by_middle_name}}" placeholder="Middle Name"></th>
+      <th><input type="text"  name="filter_by_email"  value="{{ filter_by_email }}" placeholder="Email"></th>
+      <th><input type="text"  name="filter_by_created_at"  value="{{ filter_by_created_at}}" placeholder="Created At" ></th>
+      <th><input type="text"  name="filter_by_role"  value="{{ filter_by_role }}" placeholder="Role"></th>
+    </tr>
+      </form>
+  </tfoot>
+</table>
+</div>
+{% if users.has_other_pages %}
+    <ul class="pagination">
+
+{% if users.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ users.previous_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_last_name={{ filter_by_last_name }}&filter_by_first_name={{ filter_by_first_name }}&filter_by_middle_name={{ filter_by_middle_name }}&filter_by_email={{ filter_by_email }}&filter_by_role={{ filter_by_role }}&filter_by_created_at={{ filter_by_created_at }}"><i class="fa fa-chevron-left" aria-hidden="true"></i>&laquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></li>
+{% endif %}
+
+{% if users.number|add:'-2' > 1 %}
+    <li class="page-item"><a class="page-link" href="?page={{ users.number|add:'-2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_last_name={{ filter_by_last_name }}&filter_by_first_name={{ filter_by_first_name }}&filter_by_middle_name={{ filter_by_middle_name }}&filter_by_email={{ filter_by_email }}&filter_by_role={{ filter_by_role }}&filter_by_created_at={{ filter_by_created_at }}">&hellip;</a></li>
+{% endif %}
+
+{% for i in users.paginator.page_range %}
+    {% if users.number == i %}
+        <li class="page-item active"><a class="page-link" href="#"<span class="sr-only">{{ i }}</span></a></li>
+    {% elif i > users.number|add:'-3' and i < users.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_last_name={{ filter_by_last_name }}&filter_by_first_name={{ filter_by_first_name }}&filter_by_middle_name={{ filter_by_middle_name }}&filter_by_email={{ filter_by_email }}&filter_by_role={{ filter_by_role }}&filter_by_created_at={{ filter_by_created_at }}">{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+
+{% if users.paginator.num_pages > users.number|add:'2' %}
+    <li class="page-item"><a class="page-link" href="?page={{ users.number|add:'2' }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&filter_by_last_name={{ filter_by_last_name }}&filter_by_first_name={{ filter_by_first_name }}&filter_by_middle_name={{ filter_by_middle_name }}&filter_by_email={{ filter_by_email }}&filter_by_role={{ filter_by_role }}&filter_by_created_at={{ filter_by_created_at }}">&hellip;</a></li>
+{% endif %}
+
+{% if users.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ users.next_page_number }}&order_by={{ order_by }}&filter_by_id={{ filter_by_id }}&
+    filter_by_name={{ filter_by_name }}&filter_by_description={{ filter_by_description }}&filter_by_count={{ filter_by_count }}&filter_by_author={{ filter_by_author }}"><i class="fa fa-chevron-right" aria-hidden="true"></i>&raquo;</a></li>
+{% else %}
+    <li class="disabled"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></li>
+{% endif %}
+
+</ul>
+
+{% endif %}
+{% if messages %}
+    {% for message in messages %}
+
+        <script>   alert("{{ message }}")</script>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
